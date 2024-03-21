@@ -12,5 +12,6 @@
 
   <include file="$(find lidar_undistortion)/launch/os1_undistortion.launch" />
 
+  <!-- <include file="$(find voxgraph)/launch/voxgraph_mapper_mrs.launch" pass_all_args="true" /> -->
   <include file="$(find voxgraph)/launch/voxgraph_mapper.launch" pass_all_args="true" />
 </launch>

@@ -1,0 +1,66 @@
+<launch>
+  <!-- User supplied arguments -->
+  <arg name="debug_mode"
+       default="false"
+       doc="Run the mapper in debug mode." />
+  <arg name="show_rviz"
+       default="false"
+       doc="Automatically launch Rviz." />
+  <arg name="odom" default="$(env UAV_NAME)/estimation_manager/odom_main" />
+  <arg name="local_frame" value="$(env UAV_NAME)/fcu" />
+  
+  <arg name="voxel_size" default="0.05"/>
+  <arg name="voxblox_config" default=""/>
+  <arg name="UAV_NAME" default="$(env UAV_NAME)" />
+  <arg name="pointcloud_topic" default="/$(arg UAV_NAME)/point_cloud_manager/transformed_pointcloud_out" />
+  <!-- Run voxblox in sliding window mode -->
+    <node name="voxblox" pkg="voxblox_ros" type="tsdf_server"
+          output="screen" args="-alsologtostderr" clear_params="true">
+        <remap from="pointcloud" to="$(arg pointcloud_topic)"/>
+        <!-- <remap from="pointcloud" to="point_cloud_manager/transformed_pointcloud_out" /> -->
+        <!-- <remap from="voxblox_node/esdf_map_out" to="voxblox_node/esdf_map" /> -->
+        <param name="tsdf_voxel_size" value="$(arg voxel_size)" />
+        <param name="tsdf_voxels_per_side" value="16" />
+        <param name="voxel_carving_enabled" value="true" />
+        <param name="color_mode" value="normals" />
+        <param name="max_ray_length_m" value="15.0" />
+        <param name="min_ray_length_m" value="0.3" />
+        <param name="use_tf_transforms" value="true" />
+        <param name="min_time_between_msgs_sec" value="0.0" />
+        <param name="method" value="fast" />
+        <param name="use_const_weight" value="false" />
+        <param name="allow_clear" value="true" />
+        <param name="world_frame" value="$(arg UAV_NAME)/local_origin" />
+        <param name="pose_corrected_frame" value="$(arg UAV_NAME)/pose_corrected" />
+        <param name="verbose" value="false" />
+        <param name="enable_icp" value="true" />
+        <param name="publish_map_with_trajectory" value="true" />
+        <param name="publish_tsdf_map" value="true" />
+        <param name="publish_map_every_n_sec" value="0.5" />
+        <param name="publish_mesh_every_n_sec" value="0.5" />
+        <param name="pointcloud_deintegration_queue_length" value="100" />
+
+        <rosparam file="$(find uas_mapping_core)/tmux/simulation/config/voxblox_config.yaml"/>
+        <!-- <rosparam file="$(find voxgraph)/config/voxblox_temporal_window_mrs.yaml"/> -->
+    </node>
+
+    <node name="voxgraph_mapper" pkg="voxgraph" type="voxgraph_mapping_node"
+          output="screen">
+      <rosparam file="$(find voxgraph)/config/voxgraph_mapper_mrs.yaml" />
+      <param name="max_ray_length_m" value="15.0" />
+      <param name="min_ray_length_m" value="0.3" />
+      <param name="use_tf_transforms" value="true" />
+      <param name="world_frame" value="$(arg UAV_NAME)/local_origin" />
+      <param name="pose_corrected_frame" value="$(arg UAV_NAME)/pose_corrected" />
+      <param name="verbose" value="true" />
+      <param name="submap_topic" value="/voxblox/tsdf_map_out" />
+    </node>
+
+
+  <!-- Show Rviz -->
+  <group if="$(arg show_rviz)">
+    <arg name="rviz_file" default="$(find voxgraph)/config/voxgraph_mapper.rviz" />
+    <node pkg="rviz" type="rviz" name="$(anon rviz)" output="screen"
+          args="-d $(arg rviz_file)" />
+  </group>
+</launch>

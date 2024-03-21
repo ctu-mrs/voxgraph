@@ -1,0 +1,30 @@
+# verbose: false
+# world_frame: "uav1/local_origin"
+# color_mode: "normals"
+
+method: "fast"
+# sensor_horizontal_resolution: 1024
+# sensor_vertical_resolution: 1000
+# sensor_vertical_field_of_view_degrees: 360.0
+# integrator_threads: 8
+
+tsdf_voxel_size: 0.05
+truncation_distance: 15.0
+max_weight: 1000
+pointcloud_queue_size: 1000
+max_ray_length_m: 15.0
+min_ray_length_m: 0.03
+# max_consecutive_ray_collisions: 1
+use_const_weight: false
+use_weight_dropoff: false
+
+publish_pointclouds_on_update: true
+# slice_level: 1.0
+publish_slices: true
+update_mesh_every_n_sec: 0.5
+
+pointcloud_deintegration_queue_length: 100
+
+publish_tsdf_map: true
+publish_map_every_n_sec: 1.0
+publish_map_with_trajectory: true
