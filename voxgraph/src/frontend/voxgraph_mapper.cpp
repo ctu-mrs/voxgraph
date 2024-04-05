@@ -238,7 +238,7 @@ void VoxgraphMapper::pointcloudCallback(
         std::launch::async, &VoxgraphMapper::optimizePoseGraph, this);
 
     // Publish the map in its different representations
-    publishMaps(current_timestamp);
+    //publishMaps(current_timestamp);
 
     // Resume playing the rosbag
     if (auto_pause_rosbag_) rosbag_helper_.playRosbag();
