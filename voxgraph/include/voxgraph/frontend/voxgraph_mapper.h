@@ -142,6 +142,9 @@ class VoxgraphMapper {
   bool odometry_constraints_enabled_;
   bool height_constraints_enabled_;
 
+  bool optimize_graph_after_every_submap_ = true;
+  bool publish_maps_after_every_submap_ = true;
+
   // Instantiate the submap collection
   VoxgraphSubmap::Config submap_config_;
   VoxgraphSubmapCollection::Ptr submap_collection_ptr_;

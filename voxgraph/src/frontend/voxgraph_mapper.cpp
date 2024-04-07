@@ -75,6 +75,9 @@ void VoxgraphMapper::getParametersFromRos() {
   nh_private_.param("loop_closure_topic", loop_closure_topic_,
                     loop_closure_topic_);
 
+  nh_private_.param("optimize_graph_after_every_submap", optimize_graph_after_every_submap_, true);
+  nh_private_.param("publish_maps_after_every_submap", publish_maps_after_every_submap_, true);
+
   // Get the submap creation interval as a ros::Duration
   double interval_temp;
   if (nh_private_.getParam("submap_creation_interval", interval_temp)) {
@@ -234,12 +237,19 @@ void VoxgraphMapper::pointcloudCallback(
     publishActiveSubmapMeshCallback();
 
     // Optimize the pose graph in a separate thread
-    optimization_async_handle_ = std::async(
-        std::launch::async, &VoxgraphMapper::optimizePoseGraph, this);
-
+    if(optimize_graph_after_every_submap_){
+      optimization_async_handle_ = std::async(
+          std::launch::async, &VoxgraphMapper::optimizePoseGraph, this);
+    }else{
+      ROS_WARN("The graph is not being optimized after every submap!!!!!!!!");
+    }
     // Publish the map in its different representations
-    publishMaps(current_timestamp);
-
+    
+    if(publish_maps_after_every_submap_){
+      publishMaps(current_timestamp);
+    }else{
+      ROS_INFO("Maps are NOT being published after every submap");
+    }
     // Resume playing the rosbag
     if (auto_pause_rosbag_) rosbag_helper_.playRosbag();
   }
