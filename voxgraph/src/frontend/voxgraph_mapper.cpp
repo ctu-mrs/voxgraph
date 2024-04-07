@@ -250,6 +250,7 @@ void VoxgraphMapper::pointcloudCallback(
     }else{
       ROS_INFO("Maps are NOT being published after every submap");
     }
+    
     // Resume playing the rosbag
     if (auto_pause_rosbag_) rosbag_helper_.playRosbag();
   }
